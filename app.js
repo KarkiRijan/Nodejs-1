@@ -1,6 +1,11 @@
 const express=require("express");
 const app=express();
+const connectToDb = require("./database/databaseConnect.js")
+const Blog = require('./model/blogModel.js')
 
+connectToDb()
+app.use(express.json())
+app.use(express.urlencoded({extended:true}))
 app.set('view engine','ejs')
 
 app.get("/",(req,res)=>{
@@ -14,6 +19,21 @@ app.get("/about",(req,res)=>{
 app.get("/contact",(req,res)=>{
 
   res.render("contact.ejs")
+})
+app.get("/createblog",(req,res)=>{
+  res.render("createblog.ejs")
+})
+
+app.post("/createblog",async(req,res)=>{
+  const {title,subtitle,description }=req.body
+  console.log(title, subtitle, description);
+
+ await Blog.create({
+    title:title,
+    subtitle:subtitle,
+    description:description})
+
+  res.send("Data is submitted")
 })
 
 app.listen(3000,()=>{
